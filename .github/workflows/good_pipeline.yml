@@ -1,4 +1,4 @@
-name: Good CI/CD Pipeline with Doppler Web
+name: Good CI/CD Pipeline with Doppler Web (Docker)
 
 on:
   push:
@@ -13,22 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Doppler CLI
-        run: |
-          curl -Ls https://cli.doppler.com/install.sh | sh
-
-      - name: Configure Doppler
+      - name: Fetch Secrets with Doppler (Docker)
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
-          doppler setup --project ci-cd-lab --config development --token $DOPPLER_TOKEN
-
-      - name: Fetch Secrets from Doppler
-        run: |
-          doppler run -- printenv | grep SECRET_KEY
+          docker run --rm -e DOPPLER_TOKEN=${DOPPLER_TOKEN} dopplerhq/cli:latest secrets download --format env --no-file
 
       - name: Build and Deploy
         run: |
           echo "Building application..."
           echo "Deploying application..."
-          echo "Using SECRET_KEY=$(doppler secrets get SECRET_KEY --plain)"
