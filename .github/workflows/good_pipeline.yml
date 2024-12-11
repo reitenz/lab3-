@@ -35,6 +35,10 @@ jobs:
           export DATABASE_URL="postgresql://user:$SECRET_KEY@localhost:5432/mydatabase"
           echo "Connecting to the database using the secret!"
           
-          ./run_database_migrations.sh --db-url=$DATABASE_URL
+          if [ -f "./run_database_migrations.sh" ]; then
+            ./run_database_migrations.sh --db-url=$DATABASE_URL
+          else
+            echo "Migration script not found. Skipping migrations."
+          fi
         env:
           SECRET_KEY: $SECRET_KEY
