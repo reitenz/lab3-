@@ -1,0 +1,29 @@
+name: Bad CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y nodejs npm
+
+      - name: Run tests
+        run: |
+          npm install
+          npm test
+
+      - name: Deploy application
+        env:
+          SECRET_KEY: "my-super-secret-key"
+        run: |
+          echo "Deploying application with secret key $SECRET_KEY"
