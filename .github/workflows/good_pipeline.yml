@@ -13,28 +13,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Fetch Secrets with Doppler (Secure)
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-        run: |
-          docker run --rm -e DOPPLER_TOKEN=${DOPPLER_TOKEN} dopplerhq/cli:latest run -- printenv > secrets.env
 
       - name: Load Secrets into Environment
         run: |
+          doppler secrets download --no-file --format env > secrets.env
           set -o allexport
           source secrets.env
           set +o allexport
-        shell: bash
 
       - name: Use Secrets Securely
         run: |
           echo "Building application with a hidden secret..."
-          
+
           echo "SECRET_KEY is set, but it won't appear in logs!"
-          
+
           export DATABASE_URL="postgresql://user:$SECRET_KEY@localhost:5432/mydatabase"
           echo "Connecting to the database using the secret!"
-          
+
           if [ -f "./run_database_migrations.sh" ]; then
             ./run_database_migrations.sh --db-url=$DATABASE_URL
           else
