@@ -14,11 +14,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Doppler CLI
-        uses: dopplerhq/cli-action@v3
-        env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        uses: dopplerhq/cli-action@v1
+        with:
+          token: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Load Secrets into Environment
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
           doppler secrets download --no-file --format env > secrets.env
           set -o allexport
